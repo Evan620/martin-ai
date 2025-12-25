@@ -4,8 +4,7 @@
 
 Martin SMAS (Sovereign Multi-Agent System) is a federated AI ecosystem designed to serve as the digital backbone for the summit. It acts as a force multiplier, simulating the cognitive labor of hundreds of analysts, diplomats, and bankers to deliver a "military-grade" event under extreme constraints.
 
-![sematic search](image.png)
-
+![alt text](image-1.png)
 ## System Status 🟢
 
 **Phase 1: Knowledge Core (Online)**
