@@ -1,0 +1,141 @@
+# Document Ingestion Pipeline Configuration
+
+# Document Processors
+processors:
+  pdf:
+    enabled: true
+    extract_images: false
+    extract_tables: true
+    ocr_fallback: true  # Use OCR if text extraction fails
+    
+  docx:
+    enabled: true
+    extract_images: false
+    extract_tables: true
+    preserve_formatting: false
+    
+  txt:
+    enabled: true
+    encoding: "utf-8"
+    fallback_encodings:
+      - "latin-1"
+      - "cp1252"
+      
+  markdown:
+    enabled: true
+    preserve_code_blocks: true
+
+# OCR Configuration
+ocr:
+  enabled: true
+  engine: "tesseract"
+  languages:
+    - "eng"  # English
+    - "fra"  # French (ECOWAS official language)
+  confidence_threshold: 60  # Minimum confidence score (0-100)
+  preprocessing:
+    - "deskew"
+    - "denoise"
+    - "contrast_enhancement"
+
+# Text Chunking Strategy
+chunking:
+  strategy: "semantic"  # Options: "fixed", "semantic", "recursive"
+  
+  # Fixed-size chunking
+  fixed:
+    chunk_size: 1000  # characters
+    chunk_overlap: 200
+    
+  # Semantic chunking (sentence-aware)
+  semantic:
+    max_chunk_size: 1500
+    min_chunk_size: 500
+    sentence_splitter: "nltk"  # Options: "nltk", "spacy", "simple"
+    
+  # Recursive chunking (hierarchy-aware)
+  recursive:
+    separators:
+      - "\n\n"  # Paragraphs
+      - "\n"    # Lines
+      - ". "    # Sentences
+      - " "     # Words
+    chunk_size: 1000
+    chunk_overlap: 200
+
+# Metadata Extraction
+metadata:
+  extract_from_filename: true
+  extract_from_content: true
+  
+  # Automatic metadata fields
+  auto_fields:
+    - "source"
+    - "file_type"
+    - "file_size"
+    - "created_at"
+    - "processed_at"
+    - "chunk_index"
+    - "total_chunks"
+    
+  # Content-based extraction
+  content_extraction:
+    extract_dates: true
+    extract_organizations: true
+    extract_locations: true
+    extract_key_terms: true
+    
+  # Custom metadata patterns
+  patterns:
+    document_type:
+      - pattern: "(?i)(treaty|agreement|convention)"
+        label: "treaty"
+      - pattern: "(?i)(policy|strategy|framework)"
+        label: "policy"
+      - pattern: "(?i)(feasibility|study|analysis)"
+        label: "study"
+    
+    sector:
+      - pattern: "(?i)(mineral|mining|extractive)"
+        label: "minerals"
+      - pattern: "(?i)(energy|power|electricity|renewable)"
+        label: "energy"
+      - pattern: "(?i)(agriculture|agri|farming)"
+        label: "agriculture"
+
+# Quality Control
+quality:
+  min_chunk_length: 100  # Minimum characters per chunk
+  max_chunk_length: 2000  # Maximum characters per chunk
+  remove_duplicates: true
+  duplicate_threshold: 0.95  # Cosine similarity threshold
+  
+  # Content validation
+  validation:
+    check_encoding: true
+    check_language: true
+    expected_languages:
+      - "en"
+      - "fr"
+    min_confidence: 0.7
+
+# Batch Processing
+batch:
+  size: 100  # Documents per batch
+  max_workers: 4  # Parallel workers
+  retry_failed: true
+  max_retries: 3
+  
+# Output Configuration
+output:
+  save_processed: true
+  save_metadata: true
+  save_embeddings: false  # Embeddings go directly to Pinecone
+  compression: "gzip"  # Options: "none", "gzip", "bz2"
+
+# Logging
+logging:
+  log_progress: true
+  progress_interval: 10  # Log every N documents
+  save_errors: true
+  error_log_path: "logs/ingestion_errors.log"
