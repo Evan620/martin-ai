@@ -80,35 +80,32 @@ python scripts/search_cli.py
    python scripts/setup/initialize_project.py
    ```
 
-## Usage Guide
+## Operating Guide
 
-### 1. Generate Test Data
-Generate 10 realistic ECOWAS policy and feasibility study documents:
-```bash
-python scripts/setup/generate_test_documents.py
-```
-*Outputs text files to `data/raw/` including Vision 2050, Mining Policy, and Infrastructure Projects.*
-
-### 2. Ingest Documents
-Process documents, generate embeddings, and upload to Pinecone:
+### 1. Intel Ingestion
+Load summit documents (PDF, TXT, DOCX) into the intelligence core:
+1. Place files in `data/raw/`
+2. Run the ingestion pipeline:
 ```bash
 python scripts/ingest/batch_ingest.py
 ```
 
-### 3. Query Knowledge Base
-Test semantic search capabilities:
+### 2. Live Intel Interrogation
+Interact with the Knowledge Base using the official Summit OS CLI:
 ```bash
-python examples/knowledge_base_usage.py
+python scripts/search_cli.py
 ```
 
-Or usage in Python:
+### 3. API Integration
+For programmatic access to the Knowledge Core:
 ```python
 from src.knowledge.knowledge_base import KnowledgeBase
 
 kb = KnowledgeBase()
-results = kb.search("ECOWAS Vision 2050", top_k=3)
-for res in results:
-    print(f"{res['score']}: {res['metadata']['source']}")
+kb.initialize()
+
+# Retrieve top 5 matches
+results = kb.search("mineral resources", top_k=5)
 ```
 
 ## Troubleshooting
